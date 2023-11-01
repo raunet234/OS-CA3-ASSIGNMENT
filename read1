@@ -1,0 +1,64 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+struct Process {
+    int id;
+    int arrivalTime;
+    int burstTime;
+    int waitingTime;
+    int turnaroundTime;
+};
+
+bool sortByArrivalTime(const Process& a, const Process& b) {
+    return a.arrivalTime < b.arrivalTime;
+}
+
+int main() {
+    int n;
+    std::cout << "Enter the number of processes: ";
+    std::cin >> n;
+
+    std::vector<Process> processes(n);
+
+    for (int i = 0; i < n; i++) {
+        processes[i].id = i + 1;
+        std::cout << "Enter arrival time for process " << i + 1 << ": ";
+        std::cin >> processes[i].arrivalTime;
+        std::cout << "Enter burst time for process " << i + 1 << ": ";
+        std::cin >> processes[i].burstTime;
+    }
+
+    std::sort(processes.begin(), processes.end(), sortByArrivalTime);
+
+    int currentTime = 0;
+    double totalWaitingTime = 0;
+    double totalTurnaroundTime = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (currentTime < processes[i].arrivalTime) {
+            currentTime = processes[i].arrivalTime;
+        }
+        processes[i].waitingTime = currentTime - processes[i].arrivalTime;
+        processes[i].turnaroundTime = processes[i].waitingTime + processes[i].burstTime;
+
+        totalWaitingTime += processes[i].waitingTime;
+        totalTurnaroundTime += processes[i].turnaroundTime;
+
+        currentTime += processes[i].burstTime;
+    }
+
+    std::cout << "Process\t\tArrival Time\t\tBurst Time\t\tWaiting Time\t\tTurnaround Time\n";
+    for (int i = 0; i < n; i++) {
+        std::cout << "P" << processes[i].id << "\t" << processes[i].arrivalTime << "\t\t"
+                  << processes[i].burstTime << "\t\t" << processes[i].waitingTime << "\t\t"
+                  << processes[i].turnaroundTime << "\n";
+    }
+
+    double averageWaitingTime = totalWaitingTime / n;
+    double averageTurnaroundTime = totalTurnaroundTime / n;
+    std::cout << "Average Waiting Time: " << averageWaitingTime << std::endl;
+    std::cout << "Average Turnaround Time: " << averageTurnaroundTime << std::endl;
+
+    return 0;
+}
